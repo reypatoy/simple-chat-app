@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="h-screen">
+      <body className="h-screen w-screen bg-[#E9F7EF]">
         <main className="h-full w-full">
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
