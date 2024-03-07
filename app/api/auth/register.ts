@@ -1,14 +1,18 @@
 import { RegisterError } from "@/app/errors/auth/registerError"
 import { RegisterResponse } from "@/app/response/auth/registerResponse"
 import { RegisterSchema } from "@/app/schema/auth/registerSchema"
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 export async function RegisterHandler(req: FormData): Promise<RegisterResponse> {
+    const prisma = new PrismaClient();
+
     const firstName =  req.get('firstname')
     const lastName =  req.get('lastname')
     const email =  req.get('email')
     const password =  req.get('password')
     const confirmPassword =  req.get('confirmPassword')
-       return new Promise((res, rej) => {
+       return new Promise(async (res, rej) => {
             try{
                 RegisterSchema.parse({firstName, lastName, email, password, confirmPassword})
                 const isPasswordValid: boolean = password === confirmPassword
@@ -23,6 +27,16 @@ export async function RegisterHandler(req: FormData): Promise<RegisterResponse> 
                 if(!isPasswordValid){
                     res({succeeded: false})
                 }
+                const encryptedPassword = await bcrypt.hash(String(password), 10);
+                await prisma.user.create({
+                    data: {
+                        firstName: String(firstName),
+                        lastName: String(lastName),
+                        email: String(email),
+                        password: encryptedPassword
+                    }
+                  })
+                  
                 res({succeeded: true})
             } catch(e: any){
                 const error = {

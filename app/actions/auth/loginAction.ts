@@ -8,5 +8,5 @@ export async function LoginAction(formData: FormData) {
     if(response.succeeded){
         return redirect('/pages/home')
     }
-   
+    return redirect('/')
 }
